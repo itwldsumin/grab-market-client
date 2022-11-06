@@ -1,6 +1,7 @@
 import "./index.css";
 import axios from "axios";
 import React from "react";
+import { Link } from "react-router-dom";
 function MainPage() {
   const [products, setProducts] = React.useState([]); //배열을 return해주는 함수
 
@@ -22,12 +23,12 @@ function MainPage() {
     <div>
       <div id="header">
         <div id="header-area">
-          <img src="images\icons\logo.png" />
+          <img src="images\icons\logo.png" alt="" />
         </div>
       </div>
       <div id="body">
         <div id="banner">
-          <img src={"images/banners/banner1.png"} />
+          <img src={"images/banners/banner1.png"} alt="" />
         </div>
         <h1>판매되는 상품들</h1>
         <div id="product-list">
@@ -36,18 +37,21 @@ function MainPage() {
             //jsx문법 사용 {} 포함
             return (
               <div className="product-card">
-                <img className="product-img" src={product.imageUrl} />
-                <div className="product-contents">
-                  <span className="product-name">{product.name}</span>
-                  <span className="product-price">{product.price}원</span>
-                  <div className="product-seller">
-                    <img
-                      className="product-avatar"
-                      src="images/icons/avatar.png"
-                    />
-                    <span>{product.seller}</span>
+                <Link className="product-link" to={`/products/${index}`}>
+                  <img className="product-img" src={product.imageUrl} alt="" />
+                  <div className="product-contents">
+                    <span className="product-name">{product.name}</span>
+                    <span className="product-price">{product.price}원</span>
+                    <div className="product-seller">
+                      <img
+                        className="product-avatar"
+                        src="images/icons/avatar.png"
+                        alt=""
+                      />
+                      <span>{product.seller}</span>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             );
           })}
