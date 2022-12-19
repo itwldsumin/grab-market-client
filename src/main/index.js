@@ -1,63 +1,80 @@
+import React from "react";
 import "./index.css";
 import axios from "axios";
-import React from "react";
 import { Link } from "react-router-dom";
+import { API_URL } from "../config/constants";
+import { Carousel } from "antd";
 function MainPage() {
-  const [products, setProducts] = React.useState([]); //배열을 return해주는 함수
-
+  const [products, setProducts] = React.useState([]);
+  const [banners, setBanners] = React.useState([]);
   React.useEffect(function () {
-    // useState가 변회됨에 따라 무한 랜더링 되는 것을 방지하기 위해 useEffect사용
-    axios // 라이브러리 사용하여 서버와 통신
-      .get(
-        "https://6286f049-378d-49c4-ae20-7ff7ade587cf.mock.pstmn.io/products"
-      )
+    axios
+      .get(`${API_URL}/products`)
       .then(function (result) {
         const products = result.data.products;
+        console.log(result);
         setProducts(products);
       })
       .catch(function (error) {
-        console.error("에러발생");
+        console.error("에러 발생 : ", error);
+      });
+
+    axios
+      .get(`${API_URL}/banners`)
+      .then((result) => {
+        console.log("carousel 성공");
+        const banners = result.data.banners;
+        setBanners(banners);
+      })
+      .catch((error) => {
+        console.log("에러발생: ", error);
       });
   }, []);
+
   return (
     <div>
-      <div id="header">
-        <div id="header-area">
-          <img src="images\icons\logo.png" alt="" />
-        </div>
-      </div>
-      <div id="body">
-        <div id="banner">
-          <img src={"images/banners/banner1.png"} alt="" />
-        </div>
-        <h1>판매되는 상품들</h1>
-        <div id="product-list">
-          {/* map함수 사용하여 반복문 사용 (product, index 순회) */}
-          {products.map(function (product, index) {
-            //jsx문법 사용 {} 포함
-            return (
-              <div className="product-card">
-                <Link className="product-link" to={`/products/${index}`}>
-                  <img className="product-img" src={product.imageUrl} alt="" />
-                  <div className="product-contents">
-                    <span className="product-name">{product.name}</span>
-                    <span className="product-price">{product.price}원</span>
-                    <div className="product-seller">
-                      <img
-                        className="product-avatar"
-                        src="images/icons/avatar.png"
-                        alt=""
-                      />
-                      <span>{product.seller}</span>
-                    </div>
-                  </div>
-                </Link>
+      <Carousel autoplay autoplaySpeed={3000}>
+        {banners.map((banner, index) => {
+          return (
+            <Link to={banner.href}>
+              <div id="banner">
+                <img src={`${API_URL}/${banner.imageUrl}`} />
               </div>
-            );
-          })}
-        </div>
+            </Link>
+          );
+        })}
+      </Carousel>
+
+      <h1 id="product-headline">판매되는 상품들</h1>
+      <div id="product-list">
+        {products.map(function (product, index) {
+          return (
+            <div className="product-card">
+              {product.soldout === 1 && <div className="product-blur" />}
+              <Link className="product-link" to={`/products/${product.id}`}>
+                <div>
+                  <img
+                    className="product-img"
+                    src={`${API_URL}/${product.imageUrl}`}
+                  />
+                </div>
+                <div className="product-contents">
+                  <span className="product-name">{product.name}</span>
+                  <span className="product-price">{product.price}원</span>
+                  <div className="product-seller">
+                    <img
+                      className="product-avatar"
+                      src="images/icons/avatar.png"
+                      alt=""
+                    />
+                    <span>{product.seller}</span>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          );
+        })}
       </div>
-      <div id="footer"></div>
     </div>
   );
 }
